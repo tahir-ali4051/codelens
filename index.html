@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ur-Latn" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CodeLens — code ko chalte hue dekho</title>
+<meta name="description" content="C, C++ aur Python code ko ek ek step chala kar memory (stack, heap, pointers) ke saath dekho. Physikomatics ke students ke liye.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232c59f5'/%3E%3Crect x='6' y='9' width='7' height='7' fill='%23fff'/%3E%3Crect x='14' y='9' width='7' height='7' fill='%23ffc933'/%3E%3Crect x='6' y='17' width='7' height='7' fill='%23ffc933'/%3E%3Ccircle cx='21' cy='21' r='5' fill='none' stroke='%23fff' stroke-width='2.5'/%3E%3C/svg%3E">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-first" viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M17 5v14L6 12z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M7 5v14l11-7z"/></symbol>
+  <symbol id="i-last" viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></symbol>
+  <symbol id="i-bp" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><path d="M14 5v14l8-7z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l3-3a3 3 0 0 1 4.2 4.2l-2 2-1.4-1.4 2-2a1 1 0 0 0-1.4-1.4l-3 3a1 1 0 0 1-1.4 0zM13.4 10.6a1 1 0 0 1 0 1.4l-3 3a3 3 0 0 1-4.2-4.2l2-2 1.4 1.4-2 2a1 1 0 0 0 1.4 1.4l3-3a1 1 0 0 1 1.4 0z"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 16h-2v-2h2zm2.1-7.7-.9.9c-.7.7-1.2 1.2-1.2 2.8h-2v-.5c0-1.1.5-2.1 1.2-2.8l1.2-1.3A1.7 1.7 0 0 0 12 7.5a2 2 0 0 0-2 2H8a4 4 0 0 1 8 0c0 .7-.3 1.4-.9 2z"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M3 17.3V21h3.7L18 9.7 14.3 6zM20.7 7a1 1 0 0 0 0-1.4l-2.3-2.3a1 1 0 0 0-1.4 0L15.2 5l3.7 3.7z"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="brand" id="brand">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><rect x="6" y="9" width="7" height="7" fill="#fff"/><rect x="14" y="9" width="7" height="7" fill="#ffc933"/><rect x="6" y="17" width="7" height="7" fill="#ffc933"/><circle cx="21" cy="21" r="5" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M24.5 24.5 28 28" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+    CodeLens
+  </div>
+  <div class="langs" role="tablist" aria-label="Language">
+    <button role="tab" data-lang="c" aria-selected="true">C</button>
+    <button role="tab" data-lang="cpp" aria-selected="false">C++</button>
+    <button role="tab" data-lang="py" aria-selected="false">Python</button>
+  </div>
+  <div class="top-actions">
+    <button class="btn" id="btnLessons"><svg><use href="#i-menu"/></svg>Lessons</button>
+    <button class="btn" id="btnShare" title="Is code ka link copy karo">Link copy</button>
+    <button class="btn icon" id="btnFontDn" title="Chhota font" aria-label="Font chhota">A−</button>
+    <button class="btn icon" id="btnFontUp" title="Bara font" aria-label="Font bara">A+</button>
+    <button class="btn icon" id="btnTheme" title="Light / Dark" aria-label="Theme badlo"><svg><use href="#i-moon"/></svg></button>
+    <button class="btn icon" id="btnHelp" title="Madad" aria-label="Madad"><svg><use href="#i-help"/></svg></button>
+  </div>
+</header>
+
+<main class="app">
+  <section class="pane left">
+    <div class="lesson-bar" id="lessonBar"></div>
+    <div class="editor-wrap card"><div id="editor"></div></div>
+    <div class="runbar">
+      <button class="btn primary" id="btnRun"><svg><use href="#i-play"/></svg>Run karo</button>
+      <button class="btn" id="btnEdit" hidden><svg><use href="#i-edit"/></svg>Code badlo</button>
+      <span class="status" id="status">Ctrl + Enter se bhi run hota hai</span>
+    </div>
+    <div class="io card">
+      <div class="io-tabs" role="tablist">
+        <button role="tab" id="tabOut" aria-selected="true">Output</button>
+        <button role="tab" id="tabIn" aria-selected="false">Input (scanf / cin / input)</button>
+        <span class="spacer"></span>
+      </div>
+      <pre class="console" id="console" aria-live="polite"></pre>
+      <textarea class="stdin" id="stdin" hidden placeholder="Agar program input maangta hai to yahan values likho — har value naye line par ya space se alag. Pehle yahan likho, phir Run karo."></textarea>
+    </div>
+  </section>
+
+  <section class="pane right">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabMem" aria-selected="true">Memory</button>
+      <button role="tab" id="tabLesson" aria-selected="false">Lesson</button>
+    </div>
+    <div class="view" id="viewMem">
+      <div class="note card" id="note"></div>
+      <div class="controls card" id="controls">
+        <button class="btn icon" id="cFirst" title="Shuru (Home)" aria-label="Pehla step"><svg><use href="#i-first"/></svg></button>
+        <button class="btn icon" id="cPrev" title="Pichla step (←)" aria-label="Pichla step"><svg><use href="#i-prev"/></svg></button>
+        <button class="btn icon" id="cPlay" title="Auto play (Space)" aria-label="Play"><svg><use href="#i-play"/></svg></button>
+        <button class="btn icon" id="cNext" title="Agla step (→)" aria-label="Agla step"><svg><use href="#i-next"/></svg></button>
+        <button class="btn icon" id="cLast" title="Aakhir tak (End)" aria-label="Aakhri step"><svg><use href="#i-last"/></svg></button>
+        <button class="btn icon" id="cBp" title="Agle breakpoint tak (line number par click karke breakpoint lagao)" aria-label="Agle breakpoint tak"><svg><use href="#i-bp"/></svg></button>
+        <input class="slider" id="cSlider" type="range" min="0" max="0" value="0" aria-label="Step">
+        <select id="cSpeed" aria-label="Speed"><option value="2200">Dheema</option><option value="1300" selected>Normal</option><option value="600">Tez</option><option value="250">Bohat tez</option></select>
+        <span class="count" id="cCount"></span>
+      </div>
+      <div class="mem card" id="mem"><svg class="arrows" id="arrows"></svg></div>
+    </div>
+    <div class="view lesson-view card" id="viewLesson" hidden></div>
+  </section>
+</main>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Lessons">
+  <div class="drawer-head"><span>Lessons</span><button class="btn icon ghost" id="btnCloseDrawer" aria-label="Band karo">✕</button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<dialog id="helpDlg">
+  <h2>CodeLens kaise use karein</h2>
+  <ul>
+    <li>Upar se language chuno, code likho (ya <b>Lessons</b> se koi chuno) aur <b>Run karo</b> dabao.</li>
+    <li>Program foran nahi chalta — tum use <b>ek ek step</b> chalate ho. Har step par right side me memory ki tasveer badalti hai.</li>
+    <li><b>Amber rang</b> me chamakne wala dibba abhi badla hai. <b>Teer</b> batata hai pointer / reference kahan point kar raha hai.</li>
+    <li>Keyboard: <kbd>→</kbd> agla, <kbd>←</kbd> pichla, <kbd>Space</kbd> play/pause, <kbd>Ctrl</kbd>+<kbd>Enter</kbd> run.</li>
+    <li>Code ki line number par click karke <b>breakpoint</b> lagao, phir ⏩ dabao — wahan tak seedha pahunch jao.</li>
+    <li>Program ko input chahiye (scanf / cin / input) to neeche <b>Input</b> tab me pehle values likho.</li>
+    <li>Link wala button tumhara code ek link me bana deta hai — dost ya teacher ko bhej sakte ho.</li>
+  </ul>
+  <div class="row"><button class="btn primary" id="helpOk">Samajh gaya</button></div>
+</dialog>
+
+<dialog id="saveDlg">
+  <h2>Lesson me save karo</h2>
+  <label for="sTitle">Lesson ka naam</label><input type="text" id="sTitle">
+  <label for="sGroup">Group (jaise Loops, Pointers)</label><input type="text" id="sGroup" list="groupList"><datalist id="groupList"></datalist>
+  <label for="sConcept">Concept (ek do jumlay)</label><textarea id="sConcept"></textarea>
+  <label for="sWatch">Dhyan se dekho (har line ek point)</label><textarea id="sWatch"></textarea>
+  <p style="color:var(--muted);font-size:.85rem">Abhi editor me jo code hai wo <b id="sLang"></b> version ke taur par save hoga. Same naam se doosri language ka code add kar sakte ho.</p>
+  <div class="row"><button class="btn" id="sCancel">Cancel</button><button class="btn primary" id="sSave">Save karo</button></div>
+</dialog>
+
+<script src="js/config.js"></script>
+<script src="js/lexer.js"></script>
+<script src="js/types.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/parser-stmt.js"></script>
+<script src="js/interp.js"></script>
+<script src="js/interp-expr.js"></script>
+<script src="js/interp-exec.js"></script>
+<script src="js/interp-call.js"></script>
+<script src="js/lib.js"></script>
+<script src="js/pytracer.js"></script>
+<script src="js/lessons-a.js"></script>
+<script src="js/lessons-b.js"></script>
+<script src="js/viz.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
