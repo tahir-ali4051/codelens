@@ -315,3 +315,15 @@ dialog ul { padding-left: 1.2rem; } dialog li { margin: .3rem 0; }
 .modes button:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
 .toast { white-space: pre-line; text-align: center; }
 dialog textarea, dialog input[type=text] { width: 100%; }
+
+/* ---- classes & progress ---- */
+#joinDlg label, #saveDlg label { display: block; margin: .8rem 0 .25rem; font-weight: 700; }
+#joinDlg input { width: 100%; }
+.big-input { font-size: 1.4rem !important; letter-spacing: .12em; text-transform: uppercase; text-align: center; padding: .5rem; }
+#jPin { text-transform: none; }
+.hint { color: var(--muted); font-size: .9rem; margin: .7rem 0 0; }
+.form-error { color: var(--err); font-weight: 700; margin: .6rem 0 0; }
+.btn.joined { border-color: var(--ok); }
+.lesson-item .prog { margin-right: .45rem; font-weight: 700; }
+.lesson-item .prog.done { color: var(--ok); } .lesson-item .prog.half { color: var(--warn); }
+.prog-sum { padding: .4rem .6rem; font-weight: 700; color: var(--ok); }

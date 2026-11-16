@@ -1,0 +1,54 @@
+/* CodeLens — teacher dashboard */
+.tpage { background: var(--paper); }
+.tmain { max-width: 1280px; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
+.tbadge { font-size: .72rem; font-weight: 700; background: var(--accent); color: var(--accent-ink); padding: .1rem .45rem; border-radius: 6px; margin-left: .4rem; vertical-align: middle; }
+.tmuted { color: var(--muted); }
+.tcard { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 1.2rem; box-shadow: var(--shadow); }
+.tlogin { max-width: 26rem; margin: 3rem auto; }
+.tlogin h1 { margin: 0 0 .3rem; font-size: 1.5rem; }
+.tlogin label { display: block; margin: .8rem 0 .25rem; font-weight: 700; }
+.tlogin input { width: 100%; font-size: 1.05rem; padding: .55rem .7rem; }
+.tlogin .row, .trow { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.tlogin .row { margin-top: 1rem; }
+.tmsg { margin: .8rem 0 0; font-weight: 700; } .tmsg.err { color: var(--err); } .tmsg.ok { color: var(--ok); }
+.thead { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.thead h1 { margin: 0; font-size: 1.5rem; }
+.thead .grow { flex: 1; }
+.tnew { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.tnew input { font-size: 1.05rem; padding: .5rem .7rem; min-width: 16rem; flex: 1; max-width: 26rem; }
+.cgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; }
+.ccard { display: flex; flex-direction: column; gap: .5rem; cursor: pointer; text-align: left; font: inherit; color: inherit; }
+.ccard:hover { border-color: var(--accent); }
+.ccard h3 { margin: 0; font-size: 1.2rem; }
+.ccode { font-family: 'JetBrains Mono', monospace; font-size: 1.7rem; font-weight: 700; letter-spacing: .08em; color: var(--accent); }
+.tstats { display: flex; gap: .8rem; flex-wrap: wrap; margin: 0 0 1rem; }
+.tstat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: .6rem 1rem; min-width: 8rem; }
+.tstat b { display: block; font-size: 1.6rem; line-height: 1.1; }
+.tstat span { color: var(--muted); font-size: .85rem; }
+.tbar { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; margin-bottom: .8rem; }
+.tbar input[type=search], .tbar select { font-size: 1rem; padding: .4rem .6rem; }
+.gridwrap { overflow: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); max-height: 70vh; }
+table.pg { border-collapse: separate; border-spacing: 0; font-size: .95rem; }
+table.pg th, table.pg td { padding: .3rem .35rem; border-bottom: 1px solid var(--line); text-align: center; white-space: nowrap; }
+table.pg thead th { position: sticky; top: 0; background: var(--panel-2); z-index: 2; font-weight: 700; }
+table.pg .pn { position: sticky; left: 0; background: var(--panel); text-align: left; z-index: 1; min-width: 12rem; padding-left: .8rem; font-weight: 700; }
+table.pg thead .pn { z-index: 3; background: var(--panel-2); }
+table.pg td.pc { width: 2.1rem; min-width: 2.1rem; font-weight: 700; cursor: default; }
+.pc.done { background: color-mix(in srgb, var(--ok) 22%, transparent); color: var(--ok); }
+.pc.half { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); }
+tr.pct td { font-size: .8rem; color: var(--muted); border-bottom: 2px solid var(--line); }
+tr.pct td.low { color: var(--err); font-weight: 700; }
+.act { color: var(--ok); } .idle { color: var(--muted); font-size: .85rem; }
+.lessonkey { columns: 2 18rem; font-size: .9rem; margin-top: 1rem; color: var(--ink-2); }
+.lessonkey div { break-inside: avoid; margin: .1rem 0; }
+.smallbtn { font: inherit; font-size: .8rem; padding: .15rem .5rem; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); cursor: pointer; }
+.smallbtn:hover { border-color: var(--accent); }
+.smallbtn.danger:hover { border-color: var(--err); color: var(--err); }
+.legend { color: var(--muted); font-size: .9rem; }
+dialog.bigcode { width: min(92vw, 56rem); text-align: center; }
+.bc-code { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: clamp(3rem, 14vw, 9rem); letter-spacing: .1em; color: var(--accent); line-height: 1.1; margin: .5rem 0; }
+.bc-body p { font-size: clamp(1.1rem, 2.6vw, 1.8rem); margin: .3rem 0; }
+.bc-site { font-weight: 700; }
+
+a.brand, a.btn { text-decoration: none; color: var(--ink); }
+.btn.primary .ccode { color: inherit; }

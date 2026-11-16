@@ -25,6 +25,7 @@
   const tx = (s) => CL.tr(s, S_MODE === 'ur' ? 'ur' : 'en');                 // one language (status, titles)
   const txb = (s) => S_MODE === 'both' ? CL.tr(s, 'en') + '\n' + CL.tr(s, 'ur') : tx(s); // toast: both stacked
   function toast(msg) {
+    document.querySelectorAll('.toast').forEach((x) => x.remove());
     const t = document.createElement('div'); t.className = 'toast'; t.textContent = txb(msg); t.setAttribute('role', 'status');
     document.body.append(t); setTimeout(() => t.remove(), 2600);
   }
@@ -145,6 +146,7 @@ self.onmessage = async (e) => {
       S.trace = null;
       return;
     }
+    trackRun();
     setTab('mem');
     editor.setReadOnly(true);
     $('#btnEdit').hidden = false;
@@ -184,6 +186,7 @@ self.onmessage = async (e) => {
     $('#cFirst').disabled = $('#cPrev').disabled = i === 0;
     $('#cNext').disabled = $('#cLast').disabled = i === t.steps.length - 1;
     showConsole(t, snap, prev);
+    trackStep(i, t.steps.length);
     if (i === t.steps.length - 1 && !snap.error) setStatus(t.error ? T('The program stopped at an error.', 'Program error par ruk gaya.') : T('The program finished. ✔', 'Program khatam. ✔'), t.error ? 'err' : 'ok');
   }
 
@@ -374,13 +377,15 @@ self.onmessage = async (e) => {
     const groups = [];
     S.lessons.forEach(l => { const gn = tx(lt(l.group)); let g = groups.find(x => x.name === gn); if (!g) groups.push(g = { name: gn, items: [] }); g.items.push(l); });
     let h = '';
+    if (CL.Cloud.me) { const done = S.lessons.filter(l => CL.Cloud.lessonDone(l.id)).length; h += '<div class="prog-sum">✔ ' + esc(tx(T(done + ' of ' + S.lessons.length + ' lessons done', S.lessons.length + ' me se ' + done + ' lessons mukammal'))) + '</div>'; }
     if (S.teacher) h += '<div style="padding:.3rem .5rem;font-size:.85rem;color:var(--muted)"><label><input type="checkbox" id="hideBuiltin"' + (store.get('codelens.hideBuiltin', '0') === '1' ? ' checked' : '') + '> ' + esc(tx(T('Hide sample lessons (show only mine)', 'Sample lessons chhupao (sirf apne dikhao)'))) + '</label></div>';
     h += '<button class="lesson-item' + (!S.lesson ? ' on' : '') + '" data-id="">' + esc(tx(T('My own code (free practice)', 'Apna code (khuli practice)'))) + '</button>';
     groups.forEach(g => {
       h += '<h4>' + esc(g.name) + '</h4>';
       g.items.forEach(l => {
         const tags = ['c', 'cpp', 'py'].filter(x => l.v[x]).map(x => '<span class="tag">' + LANG_NAME[x] + '</span>').join('');
-        h += '<div style="display:flex;align-items:center"><button class="lesson-item' + (S.lesson === l ? ' on' : '') + '" data-id="' + esc(l.id) + '" style="flex:1">' + esc(tx(lt(l.title))) + '<span class="tags">' + tags + '</span></button>' + (S.teacher && l.custom ? '<button class="del" data-del="' + esc(l.id) + '" title="Delete" aria-label="Delete lesson">✕</button>' : '') + '</div>';
+        const st = CL.Cloud.me ? (CL.Cloud.lessonDone(l.id) ? '<span class="prog done" title="Done">✔</span>' : CL.Cloud.lessonStarted(l.id) ? '<span class="prog half" title="Started">▶</span>' : '') : '';
+        h += '<div style="display:flex;align-items:center"><button class="lesson-item' + (S.lesson === l ? ' on' : '') + '" data-id="' + esc(l.id) + '" style="flex:1">' + st + esc(tx(lt(l.title))) + '<span class="tags">' + tags + '</span></button>' + (S.teacher && l.custom ? '<button class="del" data-del="' + esc(l.id) + '" title="Delete" aria-label="Delete lesson">✕</button>' : '') + '</div>';
       });
     });
     if (S.teacher) h += '<div style="padding:1rem .5rem;display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn" id="btnExport">' + esc(tx(T('Export lessons (.json)', 'Lessons export (.json)'))) + '</button></div>';
@@ -487,7 +492,11 @@ self.onmessage = async (e) => {
     ['#cNext', 'title', T('Next step (→)', 'Agla step (→)')], ['#cLast', 'title', T('Go to the end (End)', 'Aakhir tak (End)')],
     ['#cBp', 'title', T('Run to the next breakpoint (click a line number to set one)', 'Agle breakpoint tak (line number par click karke breakpoint lagao)')],
     ['#drawerTitle', 'text', T('Lessons', 'Lessons')], ['#helpOk', 'text', T('Got it', 'Samajh gaya')],
-    ['#sCancel', 'text', T('Cancel', 'Cancel')], ['#sSave', 'text', T('Save', 'Save karo')]
+    ['#sCancel', 'text', T('Cancel', 'Cancel')], ['#sSave', 'text', T('Save', 'Save karo')],
+    ['#jCodeL', 'text', T('Class code (your teacher gives it)', 'Class code (teacher se lo)')], ['#jNameL', 'text', T('Your name', 'Apna naam')],
+    ['#jPinL', 'text', T('Make a 4-digit PIN', '4 digit ka PIN banao')], ['#jCancel', 'text', T('Cancel', 'Cancel')], ['#jGo', 'text', T('Join', 'Join karo')],
+    ['#jHint', 'text', T('Remember your PIN. Next time (or on another device) use the same name and PIN to continue where you stopped.', 'Apna PIN yaad rakho. Agli baar (ya doosre device par) wahi naam aur PIN daalo to progress wahin se aage chalega.')],
+    ['#jClose', 'text', T('Close', 'Band karo')], ['#jLeave', 'text', T('Leave class', 'Class chhorho')]
   ];
   const SPEEDS = [T('Slow', 'Dheema'), T('Normal', 'Normal'), T('Fast', 'Tez'), T('Very fast', 'Bohat tez')];
   function helpHtml() {
@@ -505,6 +514,9 @@ self.onmessage = async (e) => {
   function applyMode() {
     document.documentElement.dataset.mode = S_MODE;
     CL.Viz.mode = S_MODE;
+    $('#btnJoin').onclick = openJoin; $('#jForm').onsubmit = submitJoin; $('#jCancel').onclick = () => $('#joinDlg').close(); $('#jClose').onclick = () => $('#joinDlg').close();
+    $('#jLeave').onclick = async () => { await CL.Cloud.leave(); $('#joinDlg').close(); renderJoinBtn(); renderDrawer(); };
+    CL.Cloud.init().then(() => { renderJoinBtn(); renderDrawer(); });
     document.querySelectorAll('#modes button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === S_MODE));
     CHROME.forEach(([sel, kind, str]) => {
       const e = $(sel); if (!e) return;
@@ -514,6 +526,7 @@ self.onmessage = async (e) => {
       else { e.setAttribute(kind, v); if (kind === 'title') e.setAttribute('aria-label', v); }
     });
     const lessonsBtn = $('#btnLessons'); if (lessonsBtn && !lessonsBtn.querySelector('svg')) lessonsBtn.insertAdjacentHTML('afterbegin', icon('menu'));
+    renderJoinBtn();
     const sp = $('#cSpeed'); Array.from(sp.options).forEach((o, k) => { o.textContent = tx(SPEEDS[k]); });
     $('#helpDlg').innerHTML = helpHtml(); $('#helpOk').onclick = () => $('#helpDlg').close();
     if (S.statusRaw) setStatus(S.statusRaw[0], S.statusRaw[1]); else setStatus(READY);
@@ -524,6 +537,54 @@ self.onmessage = async (e) => {
     renderLessonBar(); renderLessonPane(); renderDrawer();
     const sb = $('#btnSave'); if (sb) sb.textContent = tx(T('Save as lesson', 'Lesson me save karo'));
   }
+  // ---------- classes & progress (only when Supabase is configured) ----------
+  const JERR = {
+    bad_code: T('That class code was not found. Check it with your teacher.', 'Ye class code nahi mila. Teacher se dobara pooch lo.'),
+    bad_name: T('Please write your name.', 'Apna naam likho.'),
+    bad_pin: T('The PIN must be exactly 4 digits.', 'PIN bilkul 4 digits ka hona chahiye.'),
+    wrong_pin: T('Wrong PIN for this name. If you forgot it, ask your teacher to reset it.', 'Is naam ke liye PIN galat hai. Bhool gaye ho to teacher se reset karwao.'),
+    locked: T('Too many wrong tries. Ask your teacher to reset your PIN.', 'Bohat galat koshishein. Teacher se PIN reset karwao.'),
+    network: T('No internet connection. Try again.', 'Internet nahi hai. Dobara koshish karo.'),
+    nofunc: T('Classes are not set up correctly yet (teacher: run supabase/schema.sql, see SETUP-ACCOUNTS.md).', 'Classes abhi theek set up nahi hain (teacher: supabase/schema.sql chalao, SETUP-ACCOUNTS.md dekho).')
+  };
+  function renderJoinBtn() {
+    const b = $('#btnJoin'); if (!b) return;
+    b.hidden = !CL.Cloud.enabled; if (b.hidden) return;
+    const me = CL.Cloud.me;
+    const label = me ? me.name : tx(T('Join class', 'Class join karo'));
+    const sp = b.querySelector('span'); if (sp) sp.textContent = label;
+    b.classList.toggle('joined', !!me);
+  }
+  function openJoin() {
+    const me = CL.Cloud.me, dlg = $('#joinDlg');
+    $('#jForm').hidden = !!me; $('#jIn').hidden = !me;
+    $('#jTitle').textContent = tx(me ? T('Your class', 'Tumhari class') : T('Join your class', 'Apni class join karo'));
+    if (me) $('#jInfo').textContent = tx(T('You are in “' + me.class_name + '” as ' + me.name + '. Your progress is saved automatically.', 'Tum “' + me.class_name + '” me ' + me.name + ' ke naam se ho. Tumhara progress khud save hota hai.'));
+    $('#jError').hidden = true; $('#jPin').value = '';
+    dlg.showModal(); if (!me) $('#jCode').focus();
+  }
+  async function submitJoin(ev) {
+    ev.preventDefault();
+    const go = $('#jGo'), err = $('#jError'); err.hidden = true; go.disabled = true;
+    const r = await CL.Cloud.joinClass($('#jCode').value, $('#jName').value, $('#jPin').value);
+    go.disabled = false;
+    if (!r.ok) { err.innerHTML = bs(JERR[r.error] || T('Something went wrong: ' + r.error, 'Kuch masla aaya: ' + r.error)); err.hidden = false; return; }
+    $('#joinDlg').close(); renderJoinBtn(); renderDrawer();
+    toast(T('Welcome, ' + r.me.name + '! You joined ' + r.me.class_name + '.', 'Khush aamdeed ' + r.me.name + '! Tum ' + r.me.class_name + ' me shamil ho gaye.'));
+  }
+  // lesson progress: a lesson counts as DONE when the student steps through to the last step of the unchanged lesson code
+  function lessonCodeUnchanged() {
+    const l = S.lesson, v = l && variantFor(l, S.lang);
+    return !!v && editor.value.replace(/\s+$/, '') === v.code.replace(/\s+$/, '');
+  }
+  function trackRun() { if (S.lesson && lessonCodeUnchanged()) CL.Cloud.record(S.lesson.id, S.lang, 0, false, true); }
+  function trackStep(i, n) {
+    if (!S.lesson || !lessonCodeUnchanged()) return;
+    const was = CL.Cloud.lessonDone(S.lesson.id);
+    CL.Cloud.record(S.lesson.id, S.lang, n > 1 ? (i / (n - 1)) * 100 : 100, i >= n - 1, false);
+    if (!was && CL.Cloud.lessonDone(S.lesson.id)) { renderDrawer(); toast(T('Lesson completed ✔', 'Lesson mukammal ✔')); }
+  }
+
   function setMode(m) { S_MODE = m; store.set('codelens.mode', m); applyMode(); }
 
   // ---------- init ----------

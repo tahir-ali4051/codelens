@@ -152,3 +152,6 @@ The header has an **EN / UR / EN+UR** switch (default EN+UR). Every explanation,
   "watch": [ { "en": "Watch i change.", "ur": "i ko badalte dekho." } ],
   "v": { "c": { "code": "..." } } }
 ```
+
+## Classes & progress (optional)
+Teachers create classes, students join with a code, and you see everyone's progress on `teacher.html`. Setup: **SETUP-ACCOUNTS.md**. Database: `supabase/schema.sql` (tested with `tests/sql-test.mjs`).

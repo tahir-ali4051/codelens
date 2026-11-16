@@ -24,6 +24,7 @@
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
   <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l3-3a3 3 0 0 1 4.2 4.2l-2 2-1.4-1.4 2-2a1 1 0 0 0-1.4-1.4l-3 3a1 1 0 0 1-1.4 0zM13.4 10.6a1 1 0 0 1 0 1.4l-3 3a3 3 0 0 1-4.2-4.2l2-2 1.4 1.4-2 2a1 1 0 0 0 1.4 1.4l3-3a1 1 0 0 1 1.4 0z"/></symbol>
   <symbol id="i-help" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 16h-2v-2h2zm2.1-7.7-.9.9c-.7.7-1.2 1.2-1.2 2.8h-2v-.5c0-1.1.5-2.1 1.2-2.8l1.2-1.3A1.7 1.7 0 0 0 12 7.5a2 2 0 0 0-2 2H8a4 4 0 0 1 8 0c0 .7-.3 1.4-.9 2z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2c-4 0-8 2-8 5v2h16v-2c0-3-4-5-8-5z"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24"><path d="M3 17.3V21h3.7L18 9.7 14.3 6zM20.7 7a1 1 0 0 0 0-1.4l-2.3-2.3a1 1 0 0 0-1.4 0L15.2 5l3.7 3.7z"/></symbol>
 </svg>
 
@@ -41,6 +42,7 @@
     <button data-mode="en" aria-pressed="false" title="English">EN</button><button data-mode="ur" aria-pressed="false" title="Roman Urdu">UR</button><button data-mode="both" aria-pressed="true" title="English + Roman Urdu">EN+UR</button>
   </div>
   <div class="top-actions">
+    <button class="btn" id="btnJoin" hidden><svg><use href="#i-user"/></svg><span>Join class</span></button>
     <button class="btn" id="btnLessons"><svg><use href="#i-menu"/></svg>Lessons</button>
     <button class="btn" id="btnShare" title="Copy a link to this code">Copy link</button>
     <button class="btn icon" id="btnFontDn" title="Smaller font" aria-label="Smaller font">A−</button>
@@ -102,6 +104,26 @@
 
 <dialog id="helpDlg"></dialog>
 
+<dialog id="joinDlg">
+  <h2 id="jTitle">Join your class</h2>
+  <form id="jForm" method="dialog" autocomplete="off">
+    <label for="jCode" id="jCodeL">Class code (your teacher gives it)</label>
+    <input type="text" id="jCode" class="big-input" placeholder="K7M2-QX" maxlength="10" autocapitalize="characters" spellcheck="false">
+    <label for="jName" id="jNameL">Your name</label>
+    <input type="text" id="jName" maxlength="40" placeholder="e.g. Ali Khan">
+    <label for="jPin" id="jPinL">Make a 4-digit PIN</label>
+    <input type="password" id="jPin" class="big-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••">
+    <p class="hint" id="jHint">Remember your PIN. Next time (or on another device) use the same name and PIN to continue where you stopped.</p>
+    <p class="form-error" id="jError" role="alert" hidden></p>
+    <div class="row"><button type="button" class="btn" id="jCancel">Cancel</button><button type="submit" class="btn primary" id="jGo">Join</button></div>
+    <p class="hint"><a href="teacher.html">Teacher? Open the dashboard →</a></p>
+  </form>
+  <div id="jIn" hidden>
+    <p id="jInfo"></p>
+    <div class="row"><button type="button" class="btn" id="jClose">Close</button><button type="button" class="btn" id="jLeave">Leave class</button></div>
+  </div>
+</dialog>
+
 <dialog id="saveDlg">
   <h2>Save as lesson</h2>
   <label for="sTitle">Title (English)</label><input type="text" id="sTitle">
@@ -127,6 +149,8 @@
 <script src="js/interp-call.js"></script>
 <script src="js/lib.js"></script>
 <script src="js/pytracer.js"></script>
+<script src="js/vendor/supabase.js"></script>
+<script src="js/cloud.js"></script>
 <script src="js/lessons-a.js"></script>
 <script src="js/lessons-b.js"></script>
 <script src="js/lessons-en.js"></script>
